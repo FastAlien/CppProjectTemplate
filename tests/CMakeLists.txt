@@ -2,6 +2,7 @@ project(ProjectTest)
 
 add_executable(ProjectTest
 		test.cpp
+		project/arguments.cpp
 		project/factorial.cpp)
 
 target_link_libraries(ProjectTest PRIVATE
