@@ -1,125 +1,293 @@
-#include "project/factorial.h"
 #include "catch2/catch.hpp"
 
 #include <functional>
+#include <iostream>
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
-#include <iostream>
 
-using project::factorial;
+using OptionAction = std::function<void(const std::string &value)>;
 
 class Option {
 public:
-	using Action = std::function<void()>;
+    Option(std::string name, char symbol, std::string help, std::string value, std::optional<OptionAction> action)
+            : name_{std::move(name)},
+              symbol_{symbol},
+              help_{std::move(help)},
+              value_{std::move(value)},
+              action_{std::move(action)} {
+    }
 
-	Option action(Action action) {
-		action_ = std::move(action);
-		return *this;
-	}
+    [[nodiscard]]
+    const std::string &name() const {
+        return name_;
+    }
 
-	void action() const {
-		if (action_ != nullptr) {
-			action_();
-		}
-	}
+    [[nodiscard]]
+    bool hasSymbol() const {
+        return symbol_ != 0;
+    }
 
-	Option& help(std::string help) {
-		help_ = std::move(help);
-		return *this;
-	}
+    [[nodiscard]]
+    char symbol() const {
+        return symbol_;
+    }
 
-	[[nodiscard]]
-	const std::string& help() const {
-		return help_;
-	}
+    [[nodiscard]]
+    bool hasValue() const {
+        return !value_.empty();
+    }
+
+    [[nodiscard]]
+    const std::string &value() const {
+        return value_;
+    }
+
+    void action(const std::string &value) const {
+        if (!action_.has_value()) {
+            return;
+        }
+        auto action = action_.value();
+        action(value);
+    }
+
+    [[nodiscard]]
+    const std::string &help() const {
+        return help_;
+    }
 
 private:
-	Action action_;
-	std::string help_;
+    const std::string name_;
+    const char symbol_ = 0;
+    const std::string value_;
+    const std::optional<OptionAction> action_;
+    const std::string help_;
+};
+
+class OptionBuilder {
+public:
+    OptionBuilder &name(const std::string &name) {
+        name_ = name;
+        return *this;
+    }
+
+    OptionBuilder &symbol(char symbol) {
+        symbol_ = symbol;
+        return *this;
+    }
+
+    OptionBuilder &value(std::string name, std::string &value) {
+        value_ = std::move(name);
+        action_ = [&value](const std::string &v) { value = v; };
+        return *this;
+    }
+
+    OptionBuilder &enables(bool &value) {
+        value_.clear();
+        action_ = [&value](const std::string &v) { value = true; };
+        return *this;
+    }
+
+    OptionBuilder &setAction(const std::optional<OptionAction> &action) {
+        action_ = action;
+        return *this;
+    }
+
+    OptionBuilder &setHelp(const std::string &help) {
+        help_ = help;
+        return *this;
+    }
+
+    OptionBuilder &setValue(std::string value) {
+        value_ = std::move(value);
+        return *this;
+    }
+
+    Option build() {
+        assert(!name_.empty());
+        assert(value_.empty() == action_.has_value());
+        return Option(name_, symbol_, help_, value_, action_);
+    }
+
+private:
+    std::string name_;
+    char symbol_ = 0;
+    std::string help_;
+    std::string value_;
+    std::optional<OptionAction> action_;
 };
 
 class ArgumentParser {
 public:
-	Option& addOption(const std::string& name, const char symbol) {
-		const auto index = options_.size();
-		auto& option = *options_.emplace_back(std::make_unique<Option>());
-		symbols_[symbol] = index;
-		names_[name] = index;
-		return option;
-	}
+    using BuildFunction = std::function<void(OptionBuilder &)>;
 
-	void parse(int argc, const char** argv) const {
-		for (int i = 0; i < argc; ++i) {
-			const std::string name(argv[i]);
-			if (name.length() == 2 && name[0] == '0') {
-				parseSymbol(name[1]);
-				continue;
-			}
+    ArgumentParser &addOption(const BuildFunction &buildOption) {
+        OptionBuilder builder;
+        buildOption(builder);
+        auto option = builder.build();
 
-			if (name.length() > 2) {
-				parseName(name.substr(2));
-				continue;
-			}
-		}
-	}
+        assert(names_.find(option.name()) == names_.cend());
+        assert(symbols_.find(option.symbol()) == symbols_.cend());
 
-	std::string help() {
-		std::string help;
+        const auto index = options_.size();
+        options_.emplace_back(std::make_unique<Option>(option));
 
-		for (auto& it : names_) {
-			const auto& name = it.first;
-			const auto index = it.second;
-			auto& option = options_.at(index);
+        symbols_[option.symbol()] = index;
+        names_[option.name()] = index;
 
-			help += "--";
-			help += name;
-			help += '\t';
-			help += option->help();
-			help += '\n';
-		}
+        return *this;
+    }
 
-		return help;
-	}
+    void parse(int argc, const char **argv) const {
+        // 0 is program filename
+        for (int i = 1; i < argc; ++i) {
+            const std::string name{argv[i]};
+            std::optional<std::reference_wrapper<Option>> optionalOption;
+
+            if (name.length() <= 1) {
+                // TODO One char param
+                continue;
+            }
+
+            if (name[0] != '-') {
+                // TODO Incorrect option format
+                continue;
+            }
+
+            if (name.length() == 2) {
+                optionalOption = findOptionBySymbol(name[1]);
+            }
+
+            if (!optionalOption) {
+                if (name[1] != '-') {
+                    // TODO Incorrect long option format
+                    continue;
+                }
+                optionalOption = findOptionByName(name.substr(2));
+            }
+
+            if (!optionalOption) {
+                // TODO Option not found
+                continue;
+            }
+
+            auto option = optionalOption.value().get();
+            if (option.hasValue()) {
+                if (i >= argc - 1) {
+                    // TODO Missing option value
+                    continue;
+                }
+                option.action(argv[++i]);
+                continue;
+            }
+
+            option.action("");
+        }
+    }
+
+    std::string help() {
+        std::string help;
+        auto formatOption = [this, &help] (const Option& option) { help += formatOptionHelp(option); };
+
+        std::for_each(std::cbegin(options_), std::cend(options_), formatOption);
+
+        return help;
+    }
 
 private:
-	void parseSymbol(const char symbol) const {
-		try {
-			auto optionIndex = symbols_.at(symbol);
-			options_.at(optionIndex)->action();
-		} catch (std::out_of_range& e) {
-			// TODO Option not found
-		}
-	}
+    [[nodiscard]]
+    std::optional<std::reference_wrapper<Option>> findOptionBySymbol(const char symbol) const {
+        try {
+            auto optionIndex = symbols_.at(symbol);
+            return *options_.at(optionIndex);
+        } catch (std::out_of_range &e) {
+            return std::nullopt;
+        }
+    }
 
-	void parseName(const std::string& name) const {
-		try {
-			auto optionIndex = names_.at(name);
-			options_.at(optionIndex)->action();
-		} catch (std::out_of_range& e) {
-			// TODO Option not found
-		}
-	}
+    [[nodiscard]]
+    std::optional<std::reference_wrapper<Option>> findOptionByName(const std::string &name) const {
+        try {
+            auto optionIndex = names_.at(name);
+            return *options_.at(optionIndex);
+        } catch (std::out_of_range &e) {
+            return std::nullopt;
+        }
+    }
 
-	std::vector<std::unique_ptr<Option>> options_;
-	std::map<std::string, size_t> names_;
-	std::map<char, size_t> symbols_;
+    // TODO Add help formatter?
+    std::string formatOptionHelp(const Option &option) {
+        std::string help;
+
+        help += ' ';
+
+        if (option.hasSymbol()) {
+            help += '-';
+            help += option.symbol();
+        }
+
+        if (option.hasValue()) {
+            help += " <";
+            help += option.value();
+            help += '>';
+            help += ' ';
+        } else {
+            help += "\t\t";
+        }
+
+        help += option.help();
+        help += '\n';
+
+        return help;
+    }
+
+    std::vector<std::unique_ptr<Option>> options_;
+    std::map<std::string, size_t> names_;
+    std::map<char, size_t> symbols_;
 };
 
 TEST_CASE("Arguments are parsed", "[arguments]") {
-	bool showHelp = false;
-	bool listFiles = false;
+    bool showHelp = false;
+    bool listFiles = false;
+    std::string inputFile;
+    std::string port;
 
-	ArgumentParser parser;
+    ArgumentParser parser;
 
-	parser.addOption("help", 'h')
-			.help("Show help text")
-			.action([&] { showHelp = true; });
+    parser.addOption([&showHelp](OptionBuilder &builder) {
+        builder.name("help")
+                .symbol('h')
+                .name("Show help text")
+                .enables(showHelp);
+    });
 
-	parser.addOption("list", 'l')
-			.help("List files")
-			.action([&] { listFiles = true; });
+    // TODO Consider changing to builder pattern.
+//    parser.addOption("list", 'l')
+//            .help("List files")
+//            .enables(listFiles);
+//
+//    parser.addOption("input-file", 'i')
+//            .help("Open file with given filename")
+//            .value("filename", inputFile);
+//
+//    parser.addOption("port", 'p')
+//            .help("Port number")
+//            .value("port", port);
 
-	std::cout << parser.help() << std::endl;
+    std::cout << "Usage: curl [options...]" << '\n' << parser.help() << '\n';
+
+    const size_t argc = 5;
+    const char *argv[argc] = {"curl", "--help", "--list", "--port", "8080"};
+
+    parser.parse(argc, argv);
+
+    REQUIRE(showHelp);
+    REQUIRE(listFiles);
+    REQUIRE(inputFile.empty());
+    REQUIRE(port == "8080");
+
+    // TODO REQUIRE(parser.help() == "--help\tShow help text\n--list\tList
+    // files\n");
 }
