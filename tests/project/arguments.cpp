@@ -250,17 +250,18 @@ private:
         if (option.hasSymbol()) {
             optionHelp += '-';
             optionHelp += option.symbol();
+			optionHelp += ' ';
         }
 
         if (option.hasValue()) {
-            optionHelp += " <";
+            optionHelp += '<';
             optionHelp += option.value();
-            optionHelp += '>';
-            optionHelp += ' ';
+            optionHelp += "> ";
         } else {
-            optionHelp += "\t\t";
+            optionHelp += '\t';
         }
 
+        optionHelp += '\t';
         optionHelp += option.help();
         optionHelp += '\n';
 
