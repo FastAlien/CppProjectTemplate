@@ -1,7 +1,7 @@
-project(ProjectLib)
+project(ArgLib)
 
-add_library(ProjectLib STATIC
-		project/arguments.cpp
-		project/factorial.cpp)
+add_library(ArgLib STATIC
+		arg/parse.cpp
+		arg/format.cpp)
 
-target_include_directories(ProjectLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+target_include_directories(ArgLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include)

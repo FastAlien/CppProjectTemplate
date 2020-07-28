@@ -1,4 +1,4 @@
-project(ProjectApp)
+project(ArgExample)
 
-add_executable(ProjectApp application.cpp)
-target_link_libraries(ProjectApp PRIVATE ProjectLib)
+add_executable(ArgExample application.cpp)
+target_link_libraries(ArgExample PRIVATE ArgLib)
