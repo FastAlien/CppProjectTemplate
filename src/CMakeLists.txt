@@ -1,6 +1,7 @@
 project(ArgLib)
 
 add_library(ArgLib STATIC
+		arg/option.cpp
 		arg/parse.cpp
 		arg/format.cpp)
 

@@ -1,22 +1,22 @@
 #ifndef ARG_OPTION_H
 #define ARG_OPTION_H
 
-#include <algorithm>
 #include <functional>
+#include <optional>
 #include <string>
-#include <vector>
 
 namespace arg {
 
 class Option {
 public:
-    using Action = std::function<void(const std::string& value)>;
+    Option(const char symbol, const std::string& name, const std::string& description, bool& enabledValue)
+        : Option{symbol, name, description, "", [&enabledValue](const std::string& value) { enabledValue = true; }} {}
 
-    Option(const std::string& name, const char symbol, const std::string& help, bool& enabledValue)
-        : Option{name, symbol, help, "", [&enabledValue](const std::string& value) { enabledValue = true; }} {}
+    Option(const std::string& name, const std::string& description, bool& enabledValue)
+        : Option{0, name, description, "", [&enabledValue](const std::string& value) { enabledValue = true; }} {}
 
-    Option(const std::string& name, const char symbol, const std::string& help, const std::string& valueName, std::string& bindedValue)
-        : Option{name, symbol, help, valueName, [&bindedValue](const std::string& value) { bindedValue = value; }} {}
+    Option(const char symbol, const std::string& name, const std::string& description, const std::string& valueName, std::string& bindedValue)
+        : Option{symbol, name, description, valueName, [&bindedValue](const std::string& value) { bindedValue = value; }} {}
 
     [[nodiscard]]
     const std::string& name() const {
@@ -43,24 +43,22 @@ public:
         return value_;
     }
 
-    void action(const std::string& value) const {
-        if (!action_.has_value()) {
-            return;
+    void executeAction(const std::string& value) const {
+        if (action_.has_value()) {
+            auto action = action_.value();
+            action(value);
         }
-
-        auto action = action_.value();
-        action(value);
     }
 
-    [[nodiscard]] const std::string& help() const {
+    [[nodiscard]]
+    const std::string& help() const {
         return help_;
     }
 
 private:
-    Option(std::string name, char symbol, std::string help, std::string value,
-           std::optional<Action> action)
-        : symbol_{symbol}, name_{std::move(name)}, value_{std::move(value)},
-          action_{std::move(action)}, help_{std::move(help)} {}
+    using Action = std::function<void(const std::string& value)>;
+
+    Option(char symbol, std::string name, std::string help, std::string value, std::optional<Action> action);
 
     const char symbol_;
     const std::string name_;

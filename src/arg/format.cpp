@@ -2,33 +2,50 @@
 
 #include "arg/option.h"
 
-namespace arg {
+#include <algorithm>
+#include <string>
+#include <vector>
 
-std::string DefaultOptionHelpFormatter::operator()(const Option& option) const {
-    std::string optionHelp{" "};
+namespace {
+
+std::string formatOption(const arg::Option& option) {
+    std::string help;
+
+    help += ' ';
 
     if (option.hasSymbol()) {
-        optionHelp += '-';
-        optionHelp += option.symbol();
+        help += '-';
+        help += option.symbol();
     } else {
-        optionHelp += "  ";
+        help += "  ";
     }
 
-    optionHelp += " --";
-    optionHelp += option.name();
-    optionHelp += ' ';
+    help += " --";
+    help += option.name();
+    help += ' ';
 
     if (option.hasValue()) {
-        optionHelp += '<';
-        optionHelp += option.value();
-        optionHelp += "> ";
+        help += '<';
+        help += option.value();
+        help += "> ";
     }
 
-    optionHelp += "  ";
-    optionHelp += option.help();
-    optionHelp += '\n';
+    help += "  ";
+    help += option.help();
+    help += '\n';
 
-    return optionHelp;
+    return help;
+}
+
+}
+
+namespace arg {
+
+std::string HelpFormatter::format(const std::vector<Option>& options) const {
+    std::string help;
+    auto appendOptionHelp = [&help](const Option& option) { help += formatOption(option); };
+    std::for_each(options.begin(), options.end(), appendOptionHelp);
+    return help;
 }
 
 }

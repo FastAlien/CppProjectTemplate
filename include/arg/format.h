@@ -1,31 +1,19 @@
 #ifndef ARG_FORMAT_H
 #define ARG_FORMAT_H
 
-#include "option.h"
-#include "options.h"
-
 #include <string>
+#include <vector>
 
 namespace arg {
 
-struct [[maybe_unused]] DefaultOptionHelpFormatter {
-    std::string operator()(const Option& option) const;
-};
+class Option;
 
-template<typename TOptionHelpFormatter = DefaultOptionHelpFormatter>
 class HelpFormatter {
 public:
-    std::string format(const Options& options) const {
-        std::string help;
-        auto formatOption = [this, &help](const Option& option) {
-            help += optionHelpFormatter_(option);
-        };
-        std::for_each(options.begin(), options.end(), formatOption);
-        return help;
-    }
+    HelpFormatter() = default;
 
-private:
-    TOptionHelpFormatter optionHelpFormatter_;
+    [[nodiscard]]
+    std::string format(const std::vector<Option>& options) const;
 };
 
 }

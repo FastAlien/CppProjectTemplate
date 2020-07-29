@@ -1,7 +1,6 @@
 #include "arg/parse.h"
 
 #include "arg/option.h"
-#include "arg/options.h"
 
 #include <optional>
 #include <string>
@@ -25,7 +24,7 @@ void ArgumentParser::parse(const int argc, const char** argv) const {
 
         if (name.length() == 2) {
             const char symbol = name[1];
-            auto optionalOption = options_.findBySymbol(symbol);
+            auto optionalOption = findOptionBySymbol(symbol);
 
             if (!optionalOption) {
                 // TODO Option not found
@@ -33,7 +32,7 @@ void ArgumentParser::parse(const int argc, const char** argv) const {
             }
 
             if (!optionalOption->hasValue()) {
-                optionalOption->action("");
+                optionalOption->executeAction("");
                 continue;
             }
 
@@ -42,7 +41,7 @@ void ArgumentParser::parse(const int argc, const char** argv) const {
                 continue;
             }
 
-            optionalOption->action(argv[++i]);
+            optionalOption->executeAction(argv[++i]);
             continue;
         }
 
@@ -51,7 +50,7 @@ void ArgumentParser::parse(const int argc, const char** argv) const {
             continue;
         }
 
-        auto optionalOption = options_.findByName(name.substr(2));
+        auto optionalOption = findOptionByName(name.substr(2));
 
         if (!optionalOption) {
             // TODO Option not found
@@ -59,7 +58,7 @@ void ArgumentParser::parse(const int argc, const char** argv) const {
         }
 
         if (!optionalOption->hasValue()) {
-            optionalOption->action("");
+            optionalOption->executeAction("");
             continue;
         }
 
@@ -68,7 +67,7 @@ void ArgumentParser::parse(const int argc, const char** argv) const {
             continue;
         }
 
-        optionalOption->action(argv[++i]);
+        optionalOption->executeAction(argv[++i]);
     }
 }
 

@@ -1,13 +1,13 @@
-#include "arg/parse.h"
 #include "arg/format.h"
 #include "arg/option.h"
-#include "arg/options.h"
+#include "arg/parse.h"
 
 #include "catch2/catch.hpp"
 
 #include <cstddef>
-#include <string>
 #include <iostream>
+#include <string>
+#include <vector>
 
 using namespace arg;
 
@@ -18,16 +18,16 @@ TEST_CASE("Arguments are parsed", "[arguments]") {
     std::string port;
     bool test = false;
 
-    Options options{
-        {"help", 'h', "Show help text", showHelp},
-        {"list", 'l', "List all files", listFiles},
-        {"input-file", 'i', "Read input from file", "filename", inputFile},
-        {"port", 'p', "Port number", "port", port}
+    std::vector<Option> options{
+        {'h', "help", "Show help text", showHelp},
+        {'l', "list", "List all files", listFiles},
+        {'i', "input-file", "Read input from file", "filename", inputFile},
+        {'p', "port", "Port number", "port", port}
     };
 
-    options.addOption({"test", 't', "Test option", test});
+    options.emplace_back("test", "Test option", test);
 
-    const HelpFormatter helpFormatter;
+    const HelpFormatter helpFormatter{};
     std::cout << "Usage: curl [options...]" << '\n' << helpFormatter.format(options) << '\n';
 
     const size_t argc = 5;
