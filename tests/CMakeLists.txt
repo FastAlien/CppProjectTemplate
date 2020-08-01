@@ -1,11 +1,11 @@
 project(ArgTest)
 
 add_executable(ArgTest
-		test.cpp
-		arg/arguments_test.cpp)
+        main.test.cpp
+        arg/ArgumentParser.test.cpp)
 
 target_link_libraries(ArgTest PRIVATE
-		ArgLib
-		Catch2)
+        ArgLib
+        Catch2)
 
 catch_discover_tests(ArgTest)
