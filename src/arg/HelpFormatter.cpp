@@ -1,5 +1,4 @@
 #include "arg/HelpFormatter.hpp"
-
 #include "arg/Option.hpp"
 
 #include <algorithm>

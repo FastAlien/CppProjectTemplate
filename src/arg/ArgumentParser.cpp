@@ -1,5 +1,4 @@
 #include "arg/ArgumentParser.hpp"
-
 #include "arg/Option.hpp"
 #include "arg/ParseError.hpp"
 
