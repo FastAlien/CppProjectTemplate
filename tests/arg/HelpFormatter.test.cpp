@@ -18,7 +18,8 @@ SCENARIO("Formatting help for options", "[help]") {
           {"help", "Display help", helpEnabled}};
 
       THEN("Help has correct format") {
-        REQUIRE(helpFormatter.format(options) == " --help   Display help\n");
+        const auto expected = " --help   Display help\n";
+        REQUIRE(helpFormatter.format(options) == expected);
       }
     }
 
@@ -28,7 +29,8 @@ SCENARIO("Formatting help for options", "[help]") {
           {'h', "help", "Display help", helpEnabled}};
 
       THEN("Help has correct format") {
-        REQUIRE(helpFormatter.format(options) == " -h --help   Display help\n");
+        const auto expected = " -h --help   Display help\n";
+        REQUIRE(helpFormatter.format(options) == expected);
       }
     }
 
@@ -38,7 +40,8 @@ SCENARIO("Formatting help for options", "[help]") {
           {"input-file", "Load config from specified file", "filename", inputFilename}};
 
       THEN("Help has correct format") {
-        REQUIRE(helpFormatter.format(options) == " --input-file <filename>   Load config from specified file\n");
+        const auto expected = " --input-file <filename>   Load config from specified file\n";
+        REQUIRE(helpFormatter.format(options) == expected);
       }
     }
 
@@ -48,7 +51,8 @@ SCENARIO("Formatting help for options", "[help]") {
           {'i', "input-file", "Load config from specified file", "filename", inputFilename}};
 
       THEN("Help has correct format") {
-        REQUIRE(helpFormatter.format(options) == " -i --input-file <filename>   Load config from specified file\n");
+        const auto expected = " -i --input-file <filename>   Load config from specified file\n";
+        REQUIRE(helpFormatter.format(options) == expected);
       }
     }
 
@@ -62,9 +66,10 @@ SCENARIO("Formatting help for options", "[help]") {
           {"list-files", "List all files", listFilesEnabled}};
 
       THEN("Help has correct format") {
-        REQUIRE(helpFormatter.format(options) == " -h --help   Display help\n"
-                                                 " -i --input-file <filename>   Load config from specified file\n"
-                                                 " --list-files   List all files\n");
+        const auto expected = " -h --help   Display help\n"
+                              " -i --input-file <filename>   Load config from specified file\n"
+                              " --list-files   List all files\n";
+        REQUIRE(helpFormatter.format(options) == expected);
       }
     }
   }
