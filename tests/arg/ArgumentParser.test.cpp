@@ -13,15 +13,15 @@ using namespace arg;
 
 SCENARIO("Parsing arguments", "[parse]") {
   GIVEN("An argument parser with options") {
-    bool showHelp = false;
-    bool listFiles = false;
-    std::string inputFile;
+    bool helpEnabled = false;
+    bool listFilesEnabled = false;
+    std::string inputFilename;
     std::string port;
 
     const ArgumentParser argumentParser{
-        {'h', "help", "Show help text", showHelp},
-        {'l', "list", "List all files", listFiles},
-        {'i', "input-file", "Read input from file", "filename", inputFile},
+        {'h', "help", "Show help text", helpEnabled},
+        {'l', "list", "List all files", listFilesEnabled},
+        {'i', "input-file", "Read input from file", "filename", inputFilename},
         {'p', "port", "Port number", "port", port}};
 
     WHEN("Argument with unknown long name is parsed") {
@@ -36,9 +36,9 @@ SCENARIO("Parsing arguments", "[parse]") {
       }
 
       THEN("Bound values didn't changed") {
-        REQUIRE(!showHelp);
-        REQUIRE(!listFiles);
-        REQUIRE(inputFile.empty());
+        REQUIRE(!helpEnabled);
+        REQUIRE(!listFilesEnabled);
+        REQUIRE(inputFilename.empty());
         REQUIRE(port.empty());
       }
     }
@@ -55,9 +55,9 @@ SCENARIO("Parsing arguments", "[parse]") {
       }
 
       THEN("Bound values didn't changed") {
-        REQUIRE(!showHelp);
-        REQUIRE(!listFiles);
-        REQUIRE(inputFile.empty());
+        REQUIRE(!helpEnabled);
+        REQUIRE(!listFilesEnabled);
+        REQUIRE(inputFilename.empty());
         REQUIRE(port.empty());
       }
     }
@@ -72,9 +72,9 @@ SCENARIO("Parsing arguments", "[parse]") {
       }
 
       THEN("Bound values has changed") {
-        REQUIRE(showHelp);
-        REQUIRE(listFiles);
-        REQUIRE(inputFile.empty());
+        REQUIRE(helpEnabled);
+        REQUIRE(listFilesEnabled);
+        REQUIRE(inputFilename.empty());
         REQUIRE(port == "8080");
       }
     }
