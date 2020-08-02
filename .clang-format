@@ -7,4 +7,13 @@ ConstructorInitializerAllOnOneLineOrOnePerLine: true
 IndentCaseLabels: true
 IndentWidth: 4
 AccessModifierOffset: -4
+SortIncludes: true
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '^"catch2/.+"'
+    Priority: 1
+  - Regex: '^".+'
+    Priority: 0
+  - Regex: '^<.+'
+    Priority: 2
 ...

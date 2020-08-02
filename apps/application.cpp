@@ -1,4 +1,5 @@
 #include "project/factorial.hpp"
+
 #include <iostream>
 
 using project::factorial;
