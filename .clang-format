@@ -10,8 +10,8 @@ IncludeBlocks: Regroup
 IncludeCategories:
   - Regex: '^"catch2/'
     Priority: 1
-  - Regex: '^".+"'
+  - Regex: '^".+'
     Priority: 0
-  - Regex: '^<.+>'
+  - Regex: '^<.+'
     Priority: 2
 ...
