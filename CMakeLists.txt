@@ -4,6 +4,8 @@ project(CppProjectTemplate)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}/extern/catch2/cmake")
 
+include(cmake/StaticAnalyzers.cmake)
+
 include(CTest)
 include(Catch)
 
