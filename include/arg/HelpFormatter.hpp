@@ -12,6 +12,9 @@ class Option;
 class HelpFormatter {
 public:
   [[nodiscard]] std::string format(const std::vector<Option>& options) const;
+
+private:
+  void appendOptionHelp(std::string& help, const Option& option) const;
 };
 
 } // namespace arg

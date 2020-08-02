@@ -3,6 +3,7 @@
 #include "arg/ParseError.hpp"
 
 #include <algorithm>
+#include <cstddef>
 #include <optional>
 #include <string>
 
@@ -15,9 +16,10 @@ std::vector<ParseError> ArgumentParser::parse(const int argc, const char** argv)
   for (int i = 1; i < argc; ++i) {
     const std::string argument{argv[i]};
     const std::variant<Option, ParseError::Type> result = findOption(argument);
+    constexpr size_t parseErrorIndex = 1;
 
-    if (result.index() == 1) {
-      errors.emplace_back(argument, std::get<ParseError::Type>(result));
+    if (result.index() == parseErrorIndex) {
+      errors.emplace_back(std::get<ParseError::Type>(result), argument);
       continue;
     }
 
@@ -29,7 +31,7 @@ std::vector<ParseError> ArgumentParser::parse(const int argc, const char** argv)
     }
 
     if (i >= argc - 1) {
-      errors.emplace_back(argument, ParseError::Type::MissingParameter);
+      errors.emplace_back(ParseError::Type::MissingParameter, argument);
       continue;
     }
 
@@ -84,7 +86,7 @@ std::optional<Option> ArgumentParser::findOption(const ArgumentParser::FindOptio
     return {};
   }
 
-  return *it;
+  return {*it};
 }
 
 } // namespace arg

@@ -1,0 +1,8 @@
+missingIncludeSystem
+unmatchedSuppression
+
+// Suppress all checks in tests
+*:*/tests/*
+
+// Suppress all checks in external dependencies
+*:*/extern/*

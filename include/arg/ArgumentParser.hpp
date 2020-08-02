@@ -2,6 +2,7 @@
 #ifndef ARG_ARGUMENTPARSER_HPP
 #define ARG_ARGUMENTPARSER_HPP
 
+#include "Option.hpp"
 #include "ParseError.hpp"
 
 #include <functional>
@@ -14,15 +15,14 @@
 
 namespace arg {
 
-class Option;
-
 class ArgumentParser {
 public:
-  explicit ArgumentParser(std::vector<Option> options)
-      : options_{std::move(options)} {}
-
+  // cppcheck-suppress noExplicitConstructor
   ArgumentParser(std::initializer_list<Option> options)
       : options_{options} {}
+
+  explicit ArgumentParser(std::vector<Option> options)
+      : options_{std::move(options)} {}
 
   std::vector<ParseError> parse(int argc, const char** argv) const;
 

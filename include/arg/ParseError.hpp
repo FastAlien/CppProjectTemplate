@@ -14,7 +14,7 @@ public:
     MissingParameter
   };
 
-  ParseError(std::string argument, const Type type)
+  ParseError(const Type type, std::string argument)
       : type_{type},
         argument_{std::move(argument)} {}
 

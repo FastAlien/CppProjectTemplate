@@ -1,23 +1,28 @@
 #include "arg/HelpFormatter.hpp"
 #include "arg/Option.hpp"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
-namespace {
+namespace arg {
 
-std::string formatOption(const arg::Option& option) {
+std::string HelpFormatter::format(const std::vector<Option>& options) const {
   std::string help;
+  std::for_each(options.begin(), options.end(), [this, &help](const Option& option) { appendOptionHelp(help, option); });
+  return help;
+}
+
+void HelpFormatter::appendOptionHelp(std::string& help, const Option& option) const {
   help += ' ';
 
   if (option.hasSymbol()) {
     help += '-';
     help += option.getSymbol();
-  } else {
-    help += "  ";
+    help += ' ';
   }
 
-  help += " --";
+  help += "--";
   help += option.getName();
   help += ' ';
 
@@ -30,20 +35,6 @@ std::string formatOption(const arg::Option& option) {
   help += "  ";
   help += option.getDescription();
   help += '\n';
-
-  return help;
-}
-
-} // namespace
-
-namespace arg {
-
-std::string HelpFormatter::format(const std::vector<Option>& options) const {
-  std::string help;
-  for (const auto& option : options) {
-    help += formatOption(option);
-  }
-  return help;
 }
 
 } // namespace arg

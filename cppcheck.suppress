@@ -1,7 +1,0 @@
-unmatchedSuppression
-
-// Suppress all checks in tests
-*:*/tests/*
-
-// Suppress all checks in Catch 2
-*:*/extern/catch2/include/catch2/catch.hpp
