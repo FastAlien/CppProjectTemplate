@@ -2,7 +2,8 @@ project(ProjectTest)
 
 add_executable(ProjectTest
 		main.test.cpp
-		project/factorial.test.cpp)
+		project/factorial.test.cpp
+		project/stringConcatenation.test.cpp)
 
 target_link_libraries(ProjectTest PRIVATE
 		ProjectLib
