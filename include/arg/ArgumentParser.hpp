@@ -5,8 +5,10 @@
 #include "ParseError.hpp"
 
 #include <functional>
+#include <initializer_list>
 #include <optional>
 #include <string>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -16,7 +18,10 @@ class Option;
 
 class ArgumentParser {
 public:
-  explicit ArgumentParser(const std::vector<Option>& options)
+  explicit ArgumentParser(std::vector<Option> options)
+      : options_{std::move(options)} {}
+
+  ArgumentParser(std::initializer_list<Option> options)
       : options_{options} {}
 
   std::vector<ParseError> parse(int argc, const char** argv) const;
@@ -29,7 +34,7 @@ private:
   [[nodiscard]] std::optional<Option> findOptionByName(const std::string& name) const;
   [[nodiscard]] std::optional<Option> findOption(const FindOptionPredicate& predicate) const;
 
-  const std::vector<Option>& options_;
+  const std::vector<Option> options_;
 };
 
 } // namespace arg

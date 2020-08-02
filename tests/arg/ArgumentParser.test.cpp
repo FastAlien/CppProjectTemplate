@@ -12,18 +12,17 @@
 using namespace arg;
 
 SCENARIO("Parsing arguments", "[parse]") {
-  GIVEN("A argument parser with options") {
+  GIVEN("An argument parser with options") {
     bool showHelp = false;
     bool listFiles = false;
     std::string inputFile;
     std::string port;
 
-    const std::vector<Option> options{
+    const ArgumentParser argumentParser{
         {'h', "help", "Show help text", showHelp},
         {'l', "list", "List all files", listFiles},
         {'i', "input-file", "Read input from file", "filename", inputFile},
         {'p', "port", "Port number", "port", port}};
-    const ArgumentParser argumentParser{options};
 
     WHEN("Argument with unknown long name is parsed") {
       const size_t argc = 2;
