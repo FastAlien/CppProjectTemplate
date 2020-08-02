@@ -1,4 +1,4 @@
-#include "project/factorial.h"
+#include "project/factorial.hpp"
 #include "catch2/catch.hpp"
 
 using project::factorial;

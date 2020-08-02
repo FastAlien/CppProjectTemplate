@@ -1,4 +1,4 @@
-#include "project/factorial.h"
+#include "project/factorial.hpp"
 
 namespace project {
 
