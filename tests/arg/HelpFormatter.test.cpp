@@ -1,6 +1,5 @@
 #include "arg/HelpFormatter.hpp"
 #include "arg/Option.hpp"
-
 #include "catch2/catch.hpp"
 
 #include <string>

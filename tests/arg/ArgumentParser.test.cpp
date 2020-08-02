@@ -1,7 +1,5 @@
 #include "arg/ArgumentParser.hpp"
-#include "arg/Option.hpp"
 #include "arg/ParseError.hpp"
-
 #include "catch2/catch.hpp"
 
 #include <cstddef>
