@@ -1,0 +1,10 @@
+---
+Language: Cpp
+BasedOnStyle: LLVM
+ColumnLimit: 0
+PointerAlignment: Left
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+IndentCaseLabels: true
+IndentWidth: 4
+AccessModifierOffset: -4
+...
