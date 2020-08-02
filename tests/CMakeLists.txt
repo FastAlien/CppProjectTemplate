@@ -1,8 +1,8 @@
 project(ProjectTest)
 
 add_executable(ProjectTest
-		test.cpp
-		project/factorial.cpp)
+		main.test.cpp
+		project/factorial.test.cpp)
 
 target_link_libraries(ProjectTest PRIVATE
 		ProjectLib
