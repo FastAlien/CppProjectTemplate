@@ -3,6 +3,7 @@
 
 #include "catch2/catch.hpp"
 
+#include <string>
 #include <vector>
 
 using namespace arg;
